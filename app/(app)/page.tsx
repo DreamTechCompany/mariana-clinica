@@ -5,6 +5,7 @@ import {
   getAgendamentosDoDia,
   contarPacientesAtivos,
   getPagamentosDesde,
+  getInadimplentes,
 } from "@/lib/data";
 import { card, badge, btnPrimary } from "@/lib/ui";
 
@@ -22,11 +23,14 @@ export default async function DashboardPage() {
   const dia = today();
   const mes = currentMonth();
 
-  const [hoje, ativos, doMes] = await Promise.all([
+  const [hoje, ativos, doMes, inadimplentes] = await Promise.all([
     getAgendamentosDoDia(dia),
     contarPacientesAtivos(),
     getPagamentosDesde(`${mes}-01`),
+    getInadimplentes(dia),
   ]);
+
+  const totalVencido = inadimplentes.reduce((s, g) => s + g.totalVencido, 0);
 
   const receitas = doMes
     .filter((r) => r.tipo === "receita")
@@ -45,6 +49,24 @@ export default async function DashboardPage() {
           Visão geral do consultório
         </p>
       </div>
+
+      {/* Alerta de inadimplência */}
+      {inadimplentes.length > 0 && (
+        <Link
+          href="/financeiro"
+          className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-red-200 bg-red-50 px-5 py-3 transition hover:bg-red-100"
+        >
+          <span className="text-sm font-medium text-red-700">
+            ⚠ {inadimplentes.length}{" "}
+            {inadimplentes.length === 1
+              ? "paciente com pagamento vencido"
+              : "pacientes com pagamento vencido"}
+          </span>
+          <span className="text-sm font-semibold text-red-600">
+            {formatMoney(totalVencido)} · ver financeiro →
+          </span>
+        </Link>
+      )}
 
       {/* Indicadores */}
       <div className="grid gap-4 sm:grid-cols-3">

@@ -52,6 +52,15 @@ export async function createLancamento(formData: FormData) {
   redirect(back);
 }
 
+// Quita (ou reabre) um lançamento — usado pra dar baixa em pendências.
+export async function setPago(id: string, pago: boolean, mes: string) {
+  if (isDemo()) redirect(`/financeiro?m=${mes}&demo=1`);
+  const supabase = await createClient();
+  await supabase.from("pagamentos").update({ pago }).eq("id", id);
+  revalidatePath("/financeiro");
+  redirect(`/financeiro?m=${mes}`);
+}
+
 export async function deleteLancamento(id: string, mes: string) {
   if (isDemo()) redirect(`/financeiro?m=${mes}&demo=1`);
   const supabase = await createClient();

@@ -231,6 +231,74 @@ export async function pagamentosDoMes(
   return data ?? [];
 }
 
+// ── Inadimplência ────────────────────────────────────────────────────────────
+// Agrupa as receitas pendentes (não pagas) por paciente. "Vencido" = pendência
+// com data anterior a hoje. O painel lista só quem tem algo vencido.
+export type PendenciaPaciente = {
+  pacienteId: string | null;
+  nome: string;
+  totalPendente: number;
+  totalVencido: number;
+  desde: string; // data da pendência mais antiga (YYYY-MM-DD)
+  itens: number;
+};
+
+type ReceitaPendente = {
+  paciente_id: string | null;
+  valor: number;
+  data: string;
+  pacientes: { nome: string } | null;
+};
+
+export async function getInadimplentes(
+  hoje: string,
+): Promise<PendenciaPaciente[]> {
+  let rows: ReceitaPendente[];
+  if (isDemo()) {
+    rows = demoPagamentos
+      .filter((p) => p.tipo === "receita" && !p.pago)
+      .map((p) => ({
+        paciente_id: p.paciente_id,
+        valor: p.valor,
+        data: p.data,
+        pacientes: p.paciente_id
+          ? { nome: demoPacienteNome(p.paciente_id)! }
+          : null,
+      }));
+  } else {
+    const supabase = await createClient();
+    const { data } = await supabase
+      .from("pagamentos")
+      .select("paciente_id, valor, data, pacientes(nome)")
+      .eq("tipo", "receita")
+      .eq("pago", false)
+      .returns<ReceitaPendente[]>();
+    rows = data ?? [];
+  }
+
+  const grupos = new Map<string, PendenciaPaciente>();
+  for (const r of rows) {
+    const key = r.paciente_id ?? "—";
+    const g = grupos.get(key) ?? {
+      pacienteId: r.paciente_id,
+      nome: r.pacientes?.nome ?? "Sem paciente",
+      totalPendente: 0,
+      totalVencido: 0,
+      desde: r.data,
+      itens: 0,
+    };
+    g.totalPendente += Number(r.valor);
+    if (r.data < hoje) g.totalVencido += Number(r.valor);
+    if (r.data < g.desde) g.desde = r.data;
+    g.itens += 1;
+    grupos.set(key, g);
+  }
+
+  return [...grupos.values()]
+    .filter((g) => g.totalVencido > 0)
+    .sort((a, b) => a.desde.localeCompare(b.desde));
+}
+
 function demoPaciente(id: string): { id: string; nome: string } | null {
   const p = demoPacientes.find((x) => x.id === id);
   return p ? { id: p.id, nome: p.nome } : null;

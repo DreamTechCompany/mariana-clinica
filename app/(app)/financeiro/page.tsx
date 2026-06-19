@@ -1,9 +1,16 @@
 import Link from "next/link";
 import { formatMoney, formatDate, formatMonthLabel, currentMonth, today } from "@/lib/format";
-import { pagamentosDoMes, pacientesParaSelect } from "@/lib/data";
-import { createLancamento, deleteLancamento } from "./actions";
+import { pagamentosDoMes, pacientesParaSelect, getInadimplentes } from "@/lib/data";
+import { createLancamento, deleteLancamento, setPago } from "./actions";
 import { ConfirmButton } from "../confirm-button";
 import { card, input, label, btnPrimary, badge } from "@/lib/ui";
+
+// Dias corridos entre duas datas YYYY-MM-DD.
+function diasEntre(de: string, ate: string): number {
+  const a = new Date(de + "T12:00:00").getTime();
+  const b = new Date(ate + "T12:00:00").getTime();
+  return Math.round((b - a) / 86_400_000);
+}
 
 // Primeiro dia do mês seguinte a "YYYY-MM".
 function nextMonthFirst(m: string): string {
@@ -29,9 +36,11 @@ export default async function FinanceiroPage({
   const inicio = `${mes}-01`;
   const fim = nextMonthFirst(mes);
 
-  const [rows, pacientes] = await Promise.all([
+  const hoje = today();
+  const [rows, pacientes, inadimplentes] = await Promise.all([
     pagamentosDoMes(mes, inicio, fim),
     pacientesParaSelect(false),
+    getInadimplentes(hoje),
   ]);
   const receitas = rows
     .filter((r) => r.tipo === "receita")
@@ -107,6 +116,67 @@ export default async function FinanceiroPage({
         </div>
       </div>
 
+      {/* Painel de inadimplência — pacientes com receita vencida (qualquer mês) */}
+      {inadimplentes.length > 0 && (
+        <section className="rounded-2xl border border-red-200 bg-red-50/60 p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h2 className="font-heading text-lg font-semibold text-red-700">
+              Inadimplência
+            </h2>
+            <span className="text-sm font-semibold text-red-600">
+              {formatMoney(
+                inadimplentes.reduce((s, g) => s + g.totalVencido, 0),
+              )}{" "}
+              vencido
+            </span>
+          </div>
+          <p className="mt-1 text-xs text-red-500">
+            {inadimplentes.length}{" "}
+            {inadimplentes.length === 1
+              ? "paciente com pagamento vencido"
+              : "pacientes com pagamento vencido"}
+          </p>
+          <ul className="mt-3 divide-y divide-red-100">
+            {inadimplentes.map((g) => {
+              const aVencer = g.totalPendente - g.totalVencido;
+              return (
+                <li
+                  key={g.pacienteId ?? g.nome}
+                  className="flex items-center justify-between gap-3 py-2"
+                >
+                  <div className="min-w-0">
+                    {g.pacienteId ? (
+                      <Link
+                        href={`/pacientes/${g.pacienteId}`}
+                        className="font-medium text-roxo-800 hover:underline"
+                      >
+                        {g.nome}
+                      </Link>
+                    ) : (
+                      <span className="font-medium text-roxo-800">{g.nome}</span>
+                    )}
+                    <p className="text-xs text-red-500">
+                      desde {formatDate(g.desde)} · {diasEntre(g.desde, hoje)}{" "}
+                      dias
+                    </p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="font-semibold text-red-600">
+                      {formatMoney(g.totalVencido)}
+                    </p>
+                    {aVencer > 0 && (
+                      <p className="text-xs text-roxo-400">
+                        +{formatMoney(aVencer)} a vencer
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        </section>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Lançamentos do mês */}
         <div className="lg:col-span-2">
@@ -136,11 +206,16 @@ export default async function FinanceiroPage({
                         {r.pacientes?.nome && r.descricao && (
                           <span className="ml-2 text-xs text-roxo-400">{r.pacientes.nome}</span>
                         )}
-                        {!r.pago && (
-                          <span className={`${badge} ml-2 bg-dourado-200 text-dourado-600`}>
-                            pendente
-                          </span>
-                        )}
+                        {!r.pago &&
+                          (r.tipo === "receita" && r.data < hoje ? (
+                            <span className={`${badge} ml-2 bg-red-100 text-red-600`}>
+                              Vencido
+                            </span>
+                          ) : (
+                            <span className={`${badge} ml-2 bg-dourado-200 text-dourado-600`}>
+                              Pendente
+                            </span>
+                          ))}
                       </td>
                       <td
                         className={`px-4 py-3 sm:px-5 text-right font-semibold ${
@@ -150,6 +225,14 @@ export default async function FinanceiroPage({
                         {r.tipo === "receita" ? "+" : "−"} {formatMoney(Number(r.valor))}
                       </td>
                       <td className="px-4 py-3 sm:px-5 text-right">
+                       <div className="flex items-center justify-end gap-3">
+                        {!r.pago && (
+                          <form action={setPago.bind(null, r.id, true, mes)}>
+                            <button className="whitespace-nowrap text-xs font-medium text-green-600 hover:underline">
+                              Marcar pago
+                            </button>
+                          </form>
+                        )}
                         <form action={deleteLancamento.bind(null, r.id, mes)}>
                           <ConfirmButton
                             message="Excluir este lançamento?"
@@ -158,6 +241,7 @@ export default async function FinanceiroPage({
                             Excluir
                           </ConfirmButton>
                         </form>
+                       </div>
                       </td>
                     </tr>
                   ))}
