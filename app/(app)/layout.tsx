@@ -31,22 +31,15 @@ export default async function AppLayout({
         </div>
       )}
       <header className="bg-marca text-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
-          <div className="flex items-center gap-6">
-            <Link href="/" className="flex items-center gap-2.5">
-              <Brandmark size={36} />
-              <span className="font-heading text-lg font-bold tracking-wide">
-                Consultório MC
-              </span>
-            </Link>
-            <nav className="flex items-center gap-1">
-              <NavLink href="/">Início</NavLink>
-              <NavLink href="/agenda">Agenda</NavLink>
-              <NavLink href="/pacientes">Pacientes</NavLink>
-              <NavLink href="/financeiro">Financeiro</NavLink>
-            </nav>
-          </div>
-          <div className="flex items-center gap-4">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6">
+          <Link href="/" className="flex items-center gap-2.5">
+            <Brandmark size={36} />
+            <span className="font-heading text-lg font-bold tracking-wide">
+              Consultório MC
+            </span>
+          </Link>
+          {/* No celular vai pra direita da 1ª linha; no desktop fica no fim */}
+          <div className="order-2 ml-auto flex items-center gap-4 sm:order-3">
             <span className="hidden text-sm text-roxo-100 sm:inline">
               {email}
             </span>
@@ -56,9 +49,18 @@ export default async function AppLayout({
               </button>
             </form>
           </div>
+          {/* No celular quebra pra 2ª linha e rola na horizontal; no desktop fica inline */}
+          <nav className="order-3 -mx-4 flex w-full items-center gap-1 overflow-x-auto px-4 pb-0.5 sm:order-2 sm:mx-0 sm:w-auto sm:px-0 sm:pb-0">
+            <NavLink href="/">Início</NavLink>
+            <NavLink href="/agenda">Agenda</NavLink>
+            <NavLink href="/pacientes">Pacientes</NavLink>
+            <NavLink href="/financeiro">Financeiro</NavLink>
+          </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-6 py-8">{children}</main>
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+        {children}
+      </main>
     </div>
   );
 }

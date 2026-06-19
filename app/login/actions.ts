@@ -25,47 +25,10 @@ export async function login(formData: FormData) {
   redirect("/");
 }
 
-export async function signup(formData: FormData) {
-  if (isDemo()) redirect("/");
-  const supabase = await createClient();
-  const email = String(formData.get("email") ?? "").trim();
-  const password = String(formData.get("password") ?? "");
-  const fullName = String(formData.get("full_name") ?? "").trim();
-
-  if (password.length < 6) {
-    redirect(
-      "/cadastrar?error=" +
-        encodeURIComponent("A senha precisa ter ao menos 6 caracteres"),
-    );
-  }
-
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: { data: { full_name: fullName } },
-  });
-
-  if (error) {
-    const message =
-      error.message === "User already registered"
-        ? "Já existe uma conta com esse e-mail"
-        : error.message;
-    redirect("/cadastrar?error=" + encodeURIComponent(message));
-  }
-
-  // Se o projeto exige confirmação de e-mail, não há sessão ainda.
-  if (!data.session) {
-    redirect(
-      "/login?message=" +
-        encodeURIComponent(
-          "Conta criada. Confirme o e-mail antes de entrar (ou desative a confirmação no painel do Supabase).",
-        ),
-    );
-  }
-
-  revalidatePath("/", "layout");
-  redirect("/");
-}
+// Não há cadastro público: dados de saúde (LGPD). As contas (psicóloga /
+// secretária) são criadas manualmente no painel do Supabase
+// (Authentication > Users). Mantenha a opção "Allow new users to sign up"
+// DESLIGADA no Supabase para fechar o cadastro também no nível do banco.
 
 export async function logout() {
   if (isDemo()) redirect("/login");

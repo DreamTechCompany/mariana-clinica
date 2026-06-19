@@ -112,7 +112,7 @@ export default async function AgendaPage({
                       <form action={setPresenca.bind(null, a.id, "realizado", dia)}>
                         <button
                           title="Compareceu"
-                          className="rounded-md px-2 py-1 text-sm text-green-600 hover:bg-green-50"
+                          className="rounded-md px-2.5 py-2 text-base text-green-600 hover:bg-green-50"
                         >
                           ✓
                         </button>
@@ -120,7 +120,7 @@ export default async function AgendaPage({
                       <form action={setPresenca.bind(null, a.id, "faltou", dia)}>
                         <button
                           title="Faltou"
-                          className="rounded-md px-2 py-1 text-sm text-red-500 hover:bg-red-50"
+                          className="rounded-md px-2.5 py-2 text-base text-red-500 hover:bg-red-50"
                         >
                           ✕
                         </button>
@@ -128,7 +128,7 @@ export default async function AgendaPage({
                       <form action={deleteAgendamento.bind(null, a.id, dia)}>
                         <ConfirmButton
                           message="Excluir este agendamento?"
-                          className="rounded-md px-2 py-1 text-sm text-roxo-400 hover:bg-roxo-50"
+                          className="rounded-md px-2.5 py-2 text-base text-roxo-400 hover:bg-roxo-50"
                         >
                           🗑
                         </ConfirmButton>

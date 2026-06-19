@@ -110,7 +110,7 @@ export default async function FinanceiroPage({
       <div className="grid gap-6 lg:grid-cols-3">
         {/* Lançamentos do mês */}
         <div className="lg:col-span-2">
-          <div className="overflow-hidden rounded-2xl border border-roxo-100 bg-white shadow-sm">
+          <div className="overflow-x-auto rounded-2xl border border-roxo-100 bg-white shadow-sm">
             {rows.length === 0 ? (
               <p className="px-6 py-10 text-center text-sm text-roxo-400">
                 Nenhum lançamento neste mês.
@@ -119,17 +119,17 @@ export default async function FinanceiroPage({
               <table className="w-full text-sm">
                 <thead className="bg-roxo-50 text-left text-xs uppercase tracking-wide text-roxo-500">
                   <tr>
-                    <th className="px-5 py-3 font-semibold">Data</th>
-                    <th className="px-5 py-3 font-semibold">Descrição</th>
-                    <th className="px-5 py-3 text-right font-semibold">Valor</th>
-                    <th className="px-5 py-3" />
+                    <th className="px-4 py-3 sm:px-5 font-semibold">Data</th>
+                    <th className="px-4 py-3 sm:px-5 font-semibold">Descrição</th>
+                    <th className="px-4 py-3 sm:px-5 text-right font-semibold">Valor</th>
+                    <th className="px-4 py-3 sm:px-5" />
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-roxo-50">
                   {rows.map((r) => (
                     <tr key={r.id} className="hover:bg-roxo-50/50">
-                      <td className="px-5 py-3 text-roxo-500">{formatDate(r.data)}</td>
-                      <td className="px-5 py-3">
+                      <td className="px-4 py-3 sm:px-5 text-roxo-500">{formatDate(r.data)}</td>
+                      <td className="px-4 py-3 sm:px-5">
                         <span className="text-roxo-800">
                           {r.descricao ?? (r.pacientes?.nome ? `Sessão · ${r.pacientes.nome}` : "Lançamento")}
                         </span>
@@ -143,13 +143,13 @@ export default async function FinanceiroPage({
                         )}
                       </td>
                       <td
-                        className={`px-5 py-3 text-right font-semibold ${
+                        className={`px-4 py-3 sm:px-5 text-right font-semibold ${
                           r.tipo === "receita" ? "text-green-600" : "text-red-500"
                         }`}
                       >
                         {r.tipo === "receita" ? "+" : "−"} {formatMoney(Number(r.valor))}
                       </td>
-                      <td className="px-5 py-3 text-right">
+                      <td className="px-4 py-3 sm:px-5 text-right">
                         <form action={deleteLancamento.bind(null, r.id, mes)}>
                           <ConfirmButton
                             message="Excluir este lançamento?"

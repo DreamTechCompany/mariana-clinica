@@ -1,7 +1,9 @@
 // Classes utilitárias compartilhadas — mantêm o visual coeso e os JSX limpos.
 
+// text-base no mobile (16px) evita o zoom automático do iOS ao focar; text-sm
+// no desktop (sm+) mantém o visual compacto.
 export const input =
-  "mt-1 w-full rounded-lg border border-roxo-200 bg-white px-3 py-2 text-sm text-roxo-900 placeholder:text-roxo-300 focus:border-roxo-500 focus:outline-none focus:ring-2 focus:ring-roxo-200";
+  "mt-1 w-full rounded-lg border border-roxo-200 bg-white px-3 py-2 text-base text-roxo-900 placeholder:text-roxo-300 focus:border-roxo-500 focus:outline-none focus:ring-2 focus:ring-roxo-200 sm:text-sm";
 
 export const label = "block text-sm font-medium text-roxo-700";
 

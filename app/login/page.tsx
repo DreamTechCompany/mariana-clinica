@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { login } from "./actions";
 import { Brandmark } from "../brandmark";
 import { input, label, btnGold } from "@/lib/ui";
@@ -64,16 +63,6 @@ export default async function LoginPage({
               Entrar
             </button>
           </form>
-
-          <p className="mt-6 text-center text-sm text-roxo-400">
-            Não tem conta?{" "}
-            <Link
-              href="/cadastrar"
-              className="font-semibold text-roxo-600 hover:underline"
-            >
-              Criar conta
-            </Link>
-          </p>
         </div>
       </div>
     </main>

@@ -239,6 +239,7 @@ export default async function PacientePage({
                   <a
                     href={`/api/arquivo/${a.id}`}
                     target="_blank"
+                    rel="noopener noreferrer"
                     className="truncate font-medium text-roxo-700 hover:underline"
                   >
                     {a.file_name ?? "arquivo"}
@@ -333,6 +334,7 @@ export default async function PacientePage({
                           key={a.id}
                           href={`/api/arquivo/${a.id}`}
                           target="_blank"
+                          rel="noopener noreferrer"
                           className="rounded-full bg-roxo-50 px-3 py-1 text-xs font-medium text-roxo-600 hover:bg-roxo-100"
                         >
                           📎 {a.file_name ?? "anexo"}

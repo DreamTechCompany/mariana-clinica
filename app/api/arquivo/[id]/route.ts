@@ -28,9 +28,9 @@ export async function GET(
 
   const { data: arq } = await supabase
     .from("arquivos")
-    .select("storage_path")
+    .select("storage_path, file_name")
     .eq("id", id)
-    .single<{ storage_path: string }>();
+    .single<{ storage_path: string; file_name: string | null }>();
 
   if (!arq) {
     return NextResponse.json(
@@ -39,9 +39,12 @@ export async function GET(
     );
   }
 
+  // download força Content-Disposition: attachment — o anexo é baixado em vez
+  // de renderizado inline pelo Storage, fechando qualquer vetor de conteúdo
+  // ativo (HTML/SVG) servido a partir do arquivo.
   const { data: signed, error } = await supabase.storage
     .from("arquivos")
-    .createSignedUrl(arq.storage_path, 60);
+    .createSignedUrl(arq.storage_path, 60, { download: arq.file_name ?? true });
 
   if (error || !signed) {
     return NextResponse.json(

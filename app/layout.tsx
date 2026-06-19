@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat, Open_Sans } from "next/font/google";
 import "./globals.css";
 
@@ -17,6 +17,12 @@ const openSans = Open_Sans({
 export const metadata: Metadata = {
   title: "Consultório MC — Mariana Consentino",
   description: "Gestão do consultório e dos pacientes — Mariana Consentino, Psicóloga Clínica",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#3e1a5b",
 };
 
 export default function RootLayout({

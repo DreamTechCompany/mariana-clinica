@@ -130,12 +130,19 @@ export async function createSessao(pacienteId: string, formData: FormData) {
   // Anexo opcional da sessão
   const file = formData.get("file");
   if (file instanceof File && file.size > 0) {
-    await uploadArquivo(supabase, {
+    const up = await uploadArquivo(supabase, {
       pacienteId,
       sessaoId: sessao.id,
       categoria: "sessao",
       file,
     });
+    if (up.error) {
+      revalidatePath(base);
+      redirect(
+        `${base}?error=` +
+          encodeURIComponent(`Sessão salva, mas o anexo falhou: ${up.error}`),
+      );
+    }
   }
 
   revalidatePath(base);
@@ -158,12 +165,38 @@ type UploadArgs = {
   file: File;
 };
 
+// Anexos clínicos esperados: PDFs, imagens (exames/laudos) e documentos. Tipos
+// executáveis (HTML, SVG, scripts) ficam de fora — além de não fazerem sentido
+// aqui, evitam que um arquivo malicioso seja servido inline pelo Storage.
+const MAX_UPLOAD_BYTES = 15 * 1024 * 1024; // 15 MB
+const ALLOWED_MIME = new Set([
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "text/plain",
+]);
+
 // Faz o upload pro bucket privado e registra na tabela arquivos.
 // Recebe o client pra reaproveitar a sessão autenticada.
 async function uploadArquivo(
   supabase: Awaited<ReturnType<typeof createClient>>,
   { pacienteId, sessaoId, categoria, file }: UploadArgs,
 ) {
+  if (file.size > MAX_UPLOAD_BYTES) {
+    return { error: "Arquivo muito grande (máximo 15 MB)" };
+  }
+  if (!ALLOWED_MIME.has(file.type)) {
+    return {
+      error: "Tipo de arquivo não permitido (use PDF, imagem ou documento)",
+    };
+  }
+
   const safeName = file.name.replace(/[^\w.\-]+/g, "_");
   const path = `${pacienteId}/${crypto.randomUUID()}-${safeName}`;
 

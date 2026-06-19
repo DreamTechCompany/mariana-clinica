@@ -36,11 +36,11 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Rotas públicas (sem sessão): só login e cadastro. Dados de paciente
-  // (saúde) nunca têm rota pública.
+  // Rota pública (sem sessão): só o login. Não há cadastro aberto — as contas
+  // são criadas pela dona no painel do Supabase. Dados de paciente (saúde)
+  // nunca têm rota pública.
   const { pathname } = request.nextUrl;
-  const isPublic =
-    pathname.startsWith("/login") || pathname.startsWith("/cadastrar");
+  const isPublic = pathname.startsWith("/login");
 
   if (!user && !isPublic) {
     const url = request.nextUrl.clone();
