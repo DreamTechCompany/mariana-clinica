@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import type { Paciente } from "@/lib/types";
 import { STATUS_PACIENTE_LABEL } from "@/lib/types";
 import { idade, formatMoney } from "@/lib/format";
+import { listarPacientes } from "@/lib/data";
 import { btnPrimary, badge, input } from "@/lib/ui";
 
 const statusStyle: Record<string, string> = {
@@ -17,18 +16,7 @@ export default async function PacientesPage({
   searchParams: Promise<{ q?: string }>;
 }) {
   const { q } = await searchParams;
-  const supabase = await createClient();
-
-  let query = supabase
-    .from("pacientes")
-    .select("*")
-    .order("nome", { ascending: true });
-
-  if (q && q.trim()) {
-    query = query.ilike("nome", `%${q.trim()}%`);
-  }
-
-  const { data: pacientes } = await query.returns<Paciente[]>();
+  const pacientes = await listarPacientes(q);
 
   return (
     <div>

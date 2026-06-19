@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo";
 import { logout } from "@/app/login/actions";
 import { Brandmark } from "../brandmark";
 import { NavLink } from "./nav-link";
@@ -10,15 +11,25 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const demo = isDemo();
+  let email = "Demonstração";
 
-  if (!user) redirect("/login");
+  if (!demo) {
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) redirect("/login");
+    email = user.email ?? "";
+  }
 
   return (
     <div className="min-h-screen">
+      {demo && (
+        <div className="bg-dourado-400 px-6 py-1.5 text-center text-xs font-semibold text-roxo-900">
+          Modo demonstração · dados fictícios — as alterações não são salvas
+        </div>
+      )}
       <header className="bg-marca text-white">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-3">
           <div className="flex items-center gap-6">
@@ -37,7 +48,7 @@ export default async function AppLayout({
           </div>
           <div className="flex items-center gap-4">
             <span className="hidden text-sm text-roxo-100 sm:inline">
-              {user.email}
+              {email}
             </span>
             <form action={logout}>
               <button className="text-sm text-roxo-100 hover:text-white">

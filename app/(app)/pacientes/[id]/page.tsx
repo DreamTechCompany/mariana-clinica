@@ -1,8 +1,13 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
-import type { Paciente, Sessao, Arquivo, Agendamento } from "@/lib/types";
+import type { Arquivo } from "@/lib/types";
 import { STATUS_PACIENTE_LABEL, STATUS_AGENDAMENTO_LABEL } from "@/lib/types";
+import {
+  getPaciente,
+  listarSessoes,
+  listarArquivos,
+  proximosAgendamentos,
+} from "@/lib/data";
 import { formatDate, formatDateTime, idade, formatMoney, today } from "@/lib/format";
 import {
   deletePaciente,
@@ -53,39 +58,15 @@ export default async function PacientePage({
 }) {
   const { id } = await params;
   const { error } = await searchParams;
-  const supabase = await createClient();
 
-  const { data: paciente } = await supabase
-    .from("pacientes")
-    .select("*")
-    .eq("id", id)
-    .single<Paciente>();
-
+  const paciente = await getPaciente(id);
   if (!paciente) notFound();
 
-  const [{ data: sessoes }, { data: arquivos }, { data: agendamentos }] =
-    await Promise.all([
-      supabase
-        .from("sessoes")
-        .select("*")
-        .eq("paciente_id", id)
-        .order("data", { ascending: false })
-        .returns<Sessao[]>(),
-      supabase
-        .from("arquivos")
-        .select("*")
-        .eq("paciente_id", id)
-        .order("uploaded_at", { ascending: false })
-        .returns<Arquivo[]>(),
-      supabase
-        .from("agendamentos")
-        .select("*")
-        .eq("paciente_id", id)
-        .gte("inicio", new Date().toISOString())
-        .order("inicio", { ascending: true })
-        .limit(5)
-        .returns<Agendamento[]>(),
-    ]);
+  const [sessoes, arquivos, agendamentos] = await Promise.all([
+    listarSessoes(id),
+    listarArquivos(id),
+    proximosAgendamentos(id, 5),
+  ]);
 
   const anexosPorSessao = new Map<string, Arquivo[]>();
   for (const a of arquivos ?? []) {

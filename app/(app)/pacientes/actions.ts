@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo";
 
 function str(v: FormDataEntryValue | null): string {
   return typeof v === "string" ? v.trim() : "";
@@ -51,6 +52,7 @@ function readForm(formData: FormData): PacienteInput {
 }
 
 export async function createPaciente(formData: FormData) {
+  if (isDemo()) redirect("/pacientes?demo=1");
   const input = readForm(formData);
   if (!input.nome) {
     redirect("/pacientes/novo?error=" + encodeURIComponent("Nome é obrigatório"));
@@ -72,6 +74,7 @@ export async function createPaciente(formData: FormData) {
 }
 
 export async function updatePaciente(id: string, formData: FormData) {
+  if (isDemo()) redirect(`/pacientes/${id}?demo=1`);
   const input = readForm(formData);
   if (!input.nome) {
     redirect(
@@ -93,6 +96,7 @@ export async function updatePaciente(id: string, formData: FormData) {
 }
 
 export async function deletePaciente(id: string) {
+  if (isDemo()) redirect("/pacientes?demo=1");
   const supabase = await createClient();
   const { error } = await supabase.from("pacientes").delete().eq("id", id);
 
@@ -107,6 +111,7 @@ export async function deletePaciente(id: string) {
 // ── Sessões (resumo/evolução do caso) ──────────────────────────────────────
 export async function createSessao(pacienteId: string, formData: FormData) {
   const base = `/pacientes/${pacienteId}`;
+  if (isDemo()) redirect(`${base}?demo=1`);
   const supabase = await createClient();
 
   const data = str(formData.get("data")) || undefined;
@@ -138,6 +143,7 @@ export async function createSessao(pacienteId: string, formData: FormData) {
 }
 
 export async function deleteSessao(pacienteId: string, sessaoId: string) {
+  if (isDemo()) redirect(`/pacientes/${pacienteId}?demo=1`);
   const supabase = await createClient();
   await supabase.from("sessoes").delete().eq("id", sessaoId);
   revalidatePath(`/pacientes/${pacienteId}`);
@@ -183,6 +189,7 @@ async function uploadArquivo(
 
 export async function addArquivo(pacienteId: string, formData: FormData) {
   const base = `/pacientes/${pacienteId}`;
+  if (isDemo()) redirect(`${base}?demo=1`);
   const supabase = await createClient();
 
   const file = formData.get("file");
@@ -210,6 +217,7 @@ export async function addArquivo(pacienteId: string, formData: FormData) {
 }
 
 export async function deleteArquivo(pacienteId: string, arquivoId: string) {
+  if (isDemo()) redirect(`/pacientes/${pacienteId}?demo=1`);
   const supabase = await createClient();
 
   const { data: arq } = await supabase

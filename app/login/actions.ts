@@ -3,8 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo";
 
 export async function login(formData: FormData) {
+  if (isDemo()) redirect("/");
   const supabase = await createClient();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
@@ -24,6 +26,7 @@ export async function login(formData: FormData) {
 }
 
 export async function signup(formData: FormData) {
+  if (isDemo()) redirect("/");
   const supabase = await createClient();
   const email = String(formData.get("email") ?? "").trim();
   const password = String(formData.get("password") ?? "");
@@ -65,6 +68,7 @@ export async function signup(formData: FormData) {
 }
 
 export async function logout() {
+  if (isDemo()) redirect("/login");
   const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/login");

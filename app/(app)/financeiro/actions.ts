@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo";
 
 function str(v: FormDataEntryValue | null): string {
   return typeof v === "string" ? v.trim() : "";
@@ -16,6 +17,7 @@ function money(v: FormDataEntryValue | null): number | null {
 }
 
 export async function createLancamento(formData: FormData) {
+  if (isDemo()) redirect("/financeiro?demo=1");
   const tipo = str(formData.get("tipo")) === "despesa" ? "despesa" : "receita";
   const valor = money(formData.get("valor"));
   const descricao = str(formData.get("descricao")) || null;
@@ -51,6 +53,7 @@ export async function createLancamento(formData: FormData) {
 }
 
 export async function deleteLancamento(id: string, mes: string) {
+  if (isDemo()) redirect(`/financeiro?m=${mes}&demo=1`);
   const supabase = await createClient();
   await supabase.from("pagamentos").delete().eq("id", id);
   revalidatePath("/financeiro");

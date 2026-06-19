@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import type { Agendamento } from "@/lib/types";
 import { STATUS_AGENDAMENTO_LABEL } from "@/lib/types";
 import { formatTime, formatDate, formatWeekday, today } from "@/lib/format";
+import { getAgendaDoDia, pacientesParaSelect } from "@/lib/data";
 import {
   createAgendamento,
   setPresenca,
@@ -10,8 +9,6 @@ import {
 } from "./actions";
 import { ConfirmButton } from "../confirm-button";
 import { card, input, label, btnPrimary, badge } from "@/lib/ui";
-
-type Row = Agendamento & { pacientes: { nome: string } | null };
 
 const statusStyle: Record<string, string> = {
   agendado: "bg-roxo-100 text-roxo-600",
@@ -34,25 +31,10 @@ export default async function AgendaPage({
 }) {
   const sp = await searchParams;
   const dia = sp.d && /^\d{4}-\d{2}-\d{2}$/.test(sp.d) ? sp.d : today();
-  const supabase = await createClient();
 
-  const inicioDia = `${dia}T00:00:00-03:00`;
-  const fimDia = `${dia}T23:59:59-03:00`;
-
-  const [{ data: agendamentos }, { data: pacientes }] = await Promise.all([
-    supabase
-      .from("agendamentos")
-      .select("*, pacientes(nome)")
-      .gte("inicio", inicioDia)
-      .lte("inicio", fimDia)
-      .order("inicio", { ascending: true })
-      .returns<Row[]>(),
-    supabase
-      .from("pacientes")
-      .select("id, nome")
-      .neq("status", "inativo")
-      .order("nome", { ascending: true })
-      .returns<{ id: string; nome: string }[]>(),
+  const [agendamentos, pacientes] = await Promise.all([
+    getAgendaDoDia(dia),
+    pacientesParaSelect(true),
   ]);
 
   return (

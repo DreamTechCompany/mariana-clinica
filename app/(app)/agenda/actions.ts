@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo";
 import type { AgendamentoStatus } from "@/lib/types";
 
 function str(v: FormDataEntryValue | null): string {
@@ -10,6 +11,7 @@ function str(v: FormDataEntryValue | null): string {
 }
 
 export async function createAgendamento(formData: FormData) {
+  if (isDemo()) redirect("/agenda?demo=1");
   const paciente_id = str(formData.get("paciente_id"));
   const data = str(formData.get("data")); // YYYY-MM-DD
   const hora = str(formData.get("hora")); // HH:MM
@@ -45,6 +47,7 @@ export async function setPresenca(
   status: AgendamentoStatus,
   dia: string,
 ) {
+  if (isDemo()) redirect(`/agenda?d=${dia}&demo=1`);
   const supabase = await createClient();
   await supabase.from("agendamentos").update({ status }).eq("id", id);
   revalidatePath("/agenda");
@@ -52,6 +55,7 @@ export async function setPresenca(
 }
 
 export async function deleteAgendamento(id: string, dia: string) {
+  if (isDemo()) redirect(`/agenda?d=${dia}&demo=1`);
   const supabase = await createClient();
   await supabase.from("agendamentos").delete().eq("id", id);
   revalidatePath("/agenda");

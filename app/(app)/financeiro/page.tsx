@@ -1,12 +1,9 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import type { Pagamento } from "@/lib/types";
 import { formatMoney, formatDate, formatMonthLabel, currentMonth, today } from "@/lib/format";
+import { pagamentosDoMes, pacientesParaSelect } from "@/lib/data";
 import { createLancamento, deleteLancamento } from "./actions";
 import { ConfirmButton } from "../confirm-button";
 import { card, input, label, btnPrimary, badge } from "@/lib/ui";
-
-type Row = Pagamento & { pacientes: { nome: string } | null };
 
 // Primeiro dia do mês seguinte a "YYYY-MM".
 function nextMonthFirst(m: string): string {
@@ -28,27 +25,14 @@ export default async function FinanceiroPage({
 }) {
   const sp = await searchParams;
   const mes = sp.m && /^\d{4}-\d{2}$/.test(sp.m) ? sp.m : currentMonth();
-  const supabase = await createClient();
 
   const inicio = `${mes}-01`;
   const fim = nextMonthFirst(mes);
 
-  const [{ data: lancamentos }, { data: pacientes }] = await Promise.all([
-    supabase
-      .from("pagamentos")
-      .select("*, pacientes(nome)")
-      .gte("data", inicio)
-      .lt("data", fim)
-      .order("data", { ascending: false })
-      .returns<Row[]>(),
-    supabase
-      .from("pacientes")
-      .select("id, nome")
-      .order("nome", { ascending: true })
-      .returns<{ id: string; nome: string }[]>(),
+  const [rows, pacientes] = await Promise.all([
+    pagamentosDoMes(mes, inicio, fim),
+    pacientesParaSelect(false),
   ]);
-
-  const rows = lancamentos ?? [];
   const receitas = rows
     .filter((r) => r.tipo === "receita")
     .reduce((s, r) => s + Number(r.valor), 0);

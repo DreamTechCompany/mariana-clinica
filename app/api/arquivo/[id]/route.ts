@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isDemo } from "@/lib/demo";
 
 // Baixa um anexo: checa a sessão, gera um signed URL temporário do bucket
 // privado e redireciona. O middleware já barra acesso sem login.
@@ -8,6 +9,14 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+
+  if (isDemo()) {
+    return NextResponse.json(
+      { error: "Download indisponível no modo demonstração" },
+      { status: 200 },
+    );
+  }
+
   const supabase = await createClient();
 
   const {

@@ -1,11 +1,15 @@
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
-import type { Agendamento } from "@/lib/types";
 import { STATUS_AGENDAMENTO_LABEL } from "@/lib/types";
 import { formatTime, formatMoney, formatMonthLabel, currentMonth, today } from "@/lib/format";
+import {
+  getAgendamentosDoDia,
+  contarPacientesAtivos,
+  getPagamentosDesde,
+} from "@/lib/data";
 import { card, badge, btnPrimary } from "@/lib/ui";
 
-type Row = Agendamento & { pacientes: { nome: string; id: string } | null };
+// Sempre renderiza no request (data de hoje, saldo do mês) — nunca estático.
+export const dynamic = "force-dynamic";
 
 const statusStyle: Record<string, string> = {
   agendado: "bg-roxo-100 text-roxo-600",
@@ -15,37 +19,19 @@ const statusStyle: Record<string, string> = {
 };
 
 export default async function DashboardPage() {
-  const supabase = await createClient();
   const dia = today();
   const mes = currentMonth();
 
-  const [
-    { data: hoje },
-    { count: ativos },
-    { data: doMes },
-  ] = await Promise.all([
-    supabase
-      .from("agendamentos")
-      .select("*, pacientes(id, nome)")
-      .gte("inicio", `${dia}T00:00:00-03:00`)
-      .lte("inicio", `${dia}T23:59:59-03:00`)
-      .order("inicio", { ascending: true })
-      .returns<Row[]>(),
-    supabase
-      .from("pacientes")
-      .select("id", { count: "exact", head: true })
-      .eq("status", "ativo"),
-    supabase
-      .from("pagamentos")
-      .select("valor, tipo")
-      .gte("data", `${mes}-01`)
-      .returns<{ valor: number; tipo: string }[]>(),
+  const [hoje, ativos, doMes] = await Promise.all([
+    getAgendamentosDoDia(dia),
+    contarPacientesAtivos(),
+    getPagamentosDesde(`${mes}-01`),
   ]);
 
-  const receitas = (doMes ?? [])
+  const receitas = doMes
     .filter((r) => r.tipo === "receita")
     .reduce((s, r) => s + Number(r.valor), 0);
-  const despesas = (doMes ?? [])
+  const despesas = doMes
     .filter((r) => r.tipo === "despesa")
     .reduce((s, r) => s + Number(r.valor), 0);
 

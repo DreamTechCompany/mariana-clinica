@@ -1,9 +1,8 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { getPaciente } from "@/lib/data";
 import { updatePaciente } from "../../actions";
 import { PacienteForm } from "../../paciente-form";
-import type { Paciente } from "@/lib/types";
 import { card } from "@/lib/ui";
 
 export default async function EditarPacientePage({
@@ -16,13 +15,7 @@ export default async function EditarPacientePage({
   const { id } = await params;
   const { error } = await searchParams;
 
-  const supabase = await createClient();
-  const { data: paciente } = await supabase
-    .from("pacientes")
-    .select("*")
-    .eq("id", id)
-    .single<Paciente>();
-
+  const paciente = await getPaciente(id);
   if (!paciente) notFound();
 
   const action = updatePaciente.bind(null, id);

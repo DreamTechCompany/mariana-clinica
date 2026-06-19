@@ -1,8 +1,12 @@
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isDemo } from "@/lib/demo";
 
 // Atualiza a sessão a cada request e protege rotas: sem usuário, manda pro /login.
 export async function updateSession(request: NextRequest) {
+  // Modo demonstração: sem Supabase, não há login a checar — libera tudo.
+  if (isDemo()) return NextResponse.next({ request });
+
   let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
