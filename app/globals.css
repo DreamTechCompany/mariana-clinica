@@ -1,0 +1,45 @@
+@import "tailwindcss";
+
+/*
+  Identidade — Mariana Consentino, Psicóloga Clínica.
+  Extraída da arte de divulgação: roxo profundo + dourado, tipografia
+  geométrica (Montserrat) nos títulos e humanista (Open Sans) no corpo.
+*/
+@theme {
+  --color-roxo-50: #f5eef9;
+  --color-roxo-100: #e8d7f1;
+  --color-roxo-200: #d3b5e3;
+  --color-roxo-300: #b98cd1;
+  --color-roxo-400: #9d5dba;
+  --color-roxo-500: #7e2f98;
+  --color-roxo-600: #6a2c8f;
+  --color-roxo-700: #531f6f;
+  --color-roxo-800: #3e1a5b;
+  --color-roxo-900: #2a1140;
+
+  --color-dourado-200: #fbeeb8;
+  --color-dourado-300: #f7dd8a;
+  --color-dourado-400: #f2c94c;
+  --color-dourado-500: #e0b43c;
+  --color-dourado-600: #c2992e;
+
+  --font-heading: var(--font-montserrat), ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-open-sans), ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+/* Gradiente da marca — usado no login e em destaques. */
+.bg-marca {
+  background: linear-gradient(150deg, #3e1a5b 0%, #6a2c8f 55%, #7e2f98 100%);
+}
