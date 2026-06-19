@@ -162,6 +162,31 @@ export async function getAgendaDoDia(dia: string): Promise<AgPaciente[]> {
   return getAgendamentosDoDia(dia);
 }
 
+// Agendamentos num intervalo de dias [inicioDia, fimDiaExclusivo) — usado na
+// visão de semana. Datas em YYYY-MM-DD; o fim é exclusivo.
+export async function getAgendamentosNoPeriodo(
+  inicioDia: string,
+  fimDiaExclusivo: string,
+): Promise<AgPaciente[]> {
+  const lo = `${inicioDia}T00:00:00-03:00`;
+  const hi = `${fimDiaExclusivo}T00:00:00-03:00`;
+  if (isDemo()) {
+    return demoAgendamentos
+      .filter((a) => a.inicio >= lo && a.inicio < hi)
+      .sort((x, y) => x.inicio.localeCompare(y.inicio))
+      .map((a) => ({ ...a, pacientes: demoPaciente(a.paciente_id) }));
+  }
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from("agendamentos")
+    .select("*, pacientes(id, nome)")
+    .gte("inicio", lo)
+    .lt("inicio", hi)
+    .order("inicio", { ascending: true })
+    .returns<AgPaciente[]>();
+  return data ?? [];
+}
+
 export async function pacientesParaSelect(
   somenteAtivos: boolean,
 ): Promise<{ id: string; nome: string }[]> {

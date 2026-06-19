@@ -72,6 +72,18 @@ export function currentMonth(): string {
   return fmt.format(new Date()); // "2026-06"
 }
 
+// Dia (YYYY-MM-DD) de um timestamp, no fuso SP. Usado pra agrupar a agenda da
+// semana por dia, sem depender do offset com que o banco devolve o timestamp.
+export function dateKey(iso: string): string {
+  const fmt = new Intl.DateTimeFormat("en-CA", {
+    timeZone: TZ,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  return fmt.format(new Date(iso));
+}
+
 // Data de hoje no formato YYYY-MM-DD (fuso SP).
 export function today(): string {
   const fmt = new Intl.DateTimeFormat("en-CA", {
