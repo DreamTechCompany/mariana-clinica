@@ -26,11 +26,11 @@ export default async function AppLayout({
   return (
     <div className="min-h-screen">
       {demo && (
-        <div className="bg-dourado-400 px-6 py-1.5 text-center text-xs font-semibold text-roxo-900">
+        <div className="bg-dourado-400 px-6 py-1.5 text-center text-xs font-semibold text-roxo-900 print:hidden">
           Modo demonstração · dados fictícios — as alterações não são salvas
         </div>
       )}
-      <header className="bg-marca text-white">
+      <header className="bg-marca text-white print:hidden">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-3 sm:px-6">
           <Link href="/" className="flex items-center gap-2.5">
             <Brandmark size={36} />
@@ -58,7 +58,7 @@ export default async function AppLayout({
           </nav>
         </div>
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8">
+      <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6 sm:py-8 print:max-w-none print:p-0">
         {children}
       </main>
     </div>

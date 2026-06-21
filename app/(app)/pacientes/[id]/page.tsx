@@ -109,6 +109,9 @@ export default async function PacientePage({
           </p>
         </div>
         <div className="flex gap-2">
+          <Link href={`/pacientes/${id}/prontuario`} className={btnGold}>
+            Baixar PDF
+          </Link>
           <Link href={`/pacientes/${id}/editar`} className={btnOutline}>
             Editar
           </Link>

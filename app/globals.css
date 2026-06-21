@@ -43,3 +43,22 @@ h4,
 .bg-marca {
   background: linear-gradient(150deg, #3e1a5b 0%, #6a2c8f 55%, #7e2f98 100%);
 }
+
+/* Impressão / exportação de PDF (prontuário). O navegador imprime esta página
+   em A4; o usuário escolhe "Salvar como PDF" no diálogo de impressão. */
+@media print {
+  @page {
+    size: A4;
+    margin: 16mm 14mm;
+  }
+  body {
+    background: #fff;
+    /* mantém as cores da marca no PDF (cabeçalho, faixas) */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  /* evita cortar um bloco no meio entre páginas */
+  .quebra-evitar {
+    break-inside: avoid;
+  }
+}
