@@ -61,9 +61,10 @@ abaixo) e fazer um novo deploy: o demo vira o sistema real.
    npm run dev
    ```
 
-5. **Crie o acesso da Mariana** em `/cadastrar` (ou crie o usuário direto no
-   painel do Supabase). Se a confirmação de e-mail estiver ligada no Supabase,
-   confirme antes de entrar — ou desligue em _Authentication → Providers → Email_.
+5. **Crie o acesso da Mariana** direto no painel do Supabase (_Authentication →
+   Users → Add user_). Não existe cadastro público — foi removido por segurança
+   (dados de saúde, LGPD). Se a confirmação de e-mail estiver ligada, confirme
+   antes de entrar — ou desligue em _Authentication → Providers → Email_.
 
 ## Deploy (Vercel)
 
@@ -77,7 +78,7 @@ abaixo) e fazer um novo deploy: o demo vira o sistema real.
 app/
   (app)/            páginas autenticadas (dashboard, agenda, pacientes, financeiro)
   api/arquivo/      download de anexos via signed URL
-  login, cadastrar  autenticação
+  login             autenticação
 lib/
   supabase/         clients (server, browser, middleware)
   types.ts          tipos do domínio
