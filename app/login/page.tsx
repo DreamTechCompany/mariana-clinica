@@ -34,15 +34,15 @@ export default async function LoginPage({
               </p>
             )}
             <div>
-              <label className={label} htmlFor="email">
-                E-mail
+              <label className={label} htmlFor="usuario">
+                Usuário
               </label>
               <input
-                id="email"
-                name="email"
-                type="email"
+                id="usuario"
+                name="usuario"
+                type="text"
                 required
-                autoComplete="email"
+                autoComplete="username"
                 className={input}
               />
             </div>
