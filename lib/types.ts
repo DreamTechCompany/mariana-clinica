@@ -11,6 +11,7 @@ export type Paciente = {
   endereco: string | null;
   profissao: string | null;
   contato_emergencia: string | null;
+  primeira_sessao: string | null; // date — início do acompanhamento
   queixa: string | null;
   anamnese: string | null;
   valor_sessao: number | null;

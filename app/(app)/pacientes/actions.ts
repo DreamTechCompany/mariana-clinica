@@ -29,6 +29,7 @@ type PacienteInput = {
   endereco: string | null;
   profissao: string | null;
   contato_emergencia: string | null;
+  primeira_sessao: string | null;
   queixa: string | null;
   anamnese: string | null;
   valor_sessao: number | null;
@@ -44,6 +45,7 @@ function readForm(formData: FormData): PacienteInput {
     endereco: nullable(formData.get("endereco")),
     profissao: nullable(formData.get("profissao")),
     contato_emergencia: nullable(formData.get("contato_emergencia")),
+    primeira_sessao: nullable(formData.get("primeira_sessao")),
     queixa: nullable(formData.get("queixa")),
     anamnese: nullable(formData.get("anamnese")),
     valor_sessao: num(formData.get("valor_sessao")),

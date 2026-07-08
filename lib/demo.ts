@@ -52,6 +52,7 @@ export const demoPacientes: Paciente[] = [
     endereco: "Rua das Acácias, 120 — Tijuca, RJ",
     profissao: "Arquiteta",
     contato_emergencia: "Marcos Lima (irmão) — (21) 97777-2020",
+    primeira_sessao: "2026-06-05",
     queixa: "Ansiedade e dificuldade para dormir há cerca de 6 meses.",
     anamnese:
       "Paciente relata início dos sintomas após mudança de emprego. Sono fragmentado, ruminação noturna e episódios de taquicardia. Sem histórico de medicação psiquiátrica. Boa rede de apoio familiar. Hipótese inicial: transtorno de ansiedade. Plano: psicoeducação sobre ansiedade, técnicas de respiração e reestruturação cognitiva.",
@@ -69,6 +70,7 @@ export const demoPacientes: Paciente[] = [
     endereco: "Av. Atlântica, 880 — Copacabana, RJ",
     profissao: "Gerente comercial",
     contato_emergencia: "Patrícia Mendes (esposa) — (21) 96666-4040",
+    primeira_sessao: "2026-06-08",
     queixa: "Estresse no trabalho e conflitos no relacionamento.",
     anamnese:
       "Queixa de sobrecarga profissional e irritabilidade em casa. Relata distanciamento afetivo do casal. Pratica atividade física regular. Plano: trabalhar manejo de estresse e comunicação assertiva.",
@@ -86,6 +88,7 @@ export const demoPacientes: Paciente[] = [
     endereco: "Rua Conde de Bonfim, 45 — Tijuca, RJ",
     profissao: "Estudante de medicina",
     contato_emergencia: "Sônia Rocha (mãe) — (21) 95555-6060",
+    primeira_sessao: "2026-06-10",
     queixa: "Orientação profissional e autocobrança excessiva.",
     anamnese:
       "Paciente em processo de orientação vocacional, com perfeccionismo e medo de falhar nas provas. Bom insight. Plano: orientação profissional e manejo da autocrítica.",
@@ -103,6 +106,7 @@ export const demoPacientes: Paciente[] = [
     endereco: "Rua Maxwell, 200 — Vila Isabel, RJ",
     profissao: "Estudante (8º ano)",
     contato_emergencia: "Fernanda Alves (mãe) — (21) 94444-8080",
+    primeira_sessao: "2026-05-20",
     queixa: "Dificuldades de comportamento na escola (infanto-juvenil).",
     anamnese:
       "Encaminhado pela escola por agitação e dificuldade de concentração. Acompanhamento conjunto com os pais. Plano: avaliação comportamental e orientação parental.",
@@ -120,6 +124,7 @@ export const demoPacientes: Paciente[] = [
     endereco: "Rua Barão de Mesquita, 700 — Grajaú, RJ",
     profissao: "Professora",
     contato_emergencia: "Roberto Martins (marido) — (21) 93333-1011",
+    primeira_sessao: "2026-02-14",
     queixa: "Processo de luto.",
     anamnese:
       "Acompanhamento de luto após perda do pai. Boa evolução nos últimos meses. Recebeu alta com retorno aberto.",

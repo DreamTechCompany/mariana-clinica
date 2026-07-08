@@ -20,13 +20,16 @@ sem alinhar com a cliente.
 - Mutações via **Server Actions** (`actions.ts` por módulo), nunca chamadas
   Supabase no client.
 - Dados de saúde = sigilo (LGPD). Sem rotas públicas; anexos no bucket privado
-  `arquivos`, baixados por signed URL (`app/api/arquivo/[id]`).
+  `arquivos`, servidos por signed URL (`app/api/arquivo/[id]`) — inline por
+  padrão (visualizar) e download forçado com `?dl=1`. Seguro porque o upload só
+  aceita uma allowlist de MIME (sem HTML/SVG/scripts).
 - RLS: qualquer usuário autenticado tem acesso total (consultório de um dono).
 - Datas/fuso: helpers em `lib/format.ts` (America/Sao_Paulo).
 - Classes de UI compartilhadas em `lib/ui.ts`.
 
 ## Modelo de dados
 
-`pacientes` (ficha + anamnese) · `agendamentos` (agenda + presença) ·
-`sessoes` (resumo do caso) · `arquivos` (anexos) · `pagamentos` (financeiro).
-Schema em `supabase/migrations/`.
+`pacientes` (ficha + anamnese, inclui `primeira_sessao`) · `agendamentos`
+(agenda + presença; recorrência semanal = várias linhas geradas no ato, sem
+tabela de série) · `sessoes` (resumo do caso) · `arquivos` (anexos) ·
+`pagamentos` (financeiro). Schema em `supabase/migrations/`.

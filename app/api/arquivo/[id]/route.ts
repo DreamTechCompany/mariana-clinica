@@ -2,13 +2,20 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { isDemo } from "@/lib/demo";
 
-// Baixa um anexo: checa a sessão, gera um signed URL temporário do bucket
+// Abre um anexo: checa a sessão, gera um signed URL temporário do bucket
 // privado e redireciona. O middleware já barra acesso sem login.
+//
+// Por padrão o arquivo é servido inline (visualizar no navegador — PDFs e
+// imagens abrem numa aba). Com ?dl=1 força o download (Content-Disposition:
+// attachment). Servir inline é seguro porque o upload só aceita uma allowlist
+// de MIME (PDF, imagem, doc, texto) — sem HTML/SVG/scripts, então não há
+// conteúdo ativo pra ser executado a partir do anexo.
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   const { id } = await params;
+  const forcarDownload = request.nextUrl.searchParams.get("dl") === "1";
 
   if (isDemo()) {
     return NextResponse.json(
@@ -39,12 +46,15 @@ export async function GET(
     );
   }
 
-  // download força Content-Disposition: attachment — o anexo é baixado em vez
-  // de renderizado inline pelo Storage, fechando qualquer vetor de conteúdo
-  // ativo (HTML/SVG) servido a partir do arquivo.
+  // download: true/nome → Content-Disposition: attachment (baixa). Sem a opção,
+  // o Storage serve inline com o Content-Type original (visualiza no navegador).
   const { data: signed, error } = await supabase.storage
     .from("arquivos")
-    .createSignedUrl(arq.storage_path, 60, { download: arq.file_name ?? true });
+    .createSignedUrl(
+      arq.storage_path,
+      60,
+      forcarDownload ? { download: arq.file_name ?? true } : undefined,
+    );
 
   if (error || !signed) {
     return NextResponse.json(

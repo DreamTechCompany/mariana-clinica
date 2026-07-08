@@ -96,6 +96,10 @@ export default async function ProntuarioPage({
                   : null
               }
             />
+            <Campo
+              rotulo="Primeira sessão"
+              valor={paciente.primeira_sessao ? formatDate(paciente.primeira_sessao) : null}
+            />
             <Campo rotulo="Telefone" valor={paciente.telefone} />
             <Campo rotulo="E-mail" valor={paciente.email} />
             <Campo rotulo="Profissão" valor={paciente.profissao} />

@@ -133,6 +133,10 @@ export default async function PacientePage({
         </h2>
         <dl className="mt-4 grid gap-4 sm:grid-cols-3">
           <DadoLinha rotulo="Nascimento" valor={formatDate(paciente.data_nascimento)} />
+          <DadoLinha
+            rotulo="Primeira sessão"
+            valor={paciente.primeira_sessao ? formatDate(paciente.primeira_sessao) : null}
+          />
           <DadoLinha rotulo="E-mail" valor={paciente.email} />
           <DadoLinha rotulo="Profissão" valor={paciente.profissao} />
           <DadoLinha rotulo="Endereço" valor={paciente.endereco} />
@@ -246,6 +250,12 @@ export default async function PacientePage({
                     className="truncate font-medium text-roxo-700 hover:underline"
                   >
                     {a.file_name ?? "arquivo"}
+                  </a>
+                  <a
+                    href={`/api/arquivo/${a.id}?dl=1`}
+                    className="ml-2 text-xs text-roxo-500 hover:underline"
+                  >
+                    baixar
                   </a>
                   <span className="ml-2 text-xs text-roxo-400">
                     {categoriaLabel[a.categoria]} · {formatDate(a.uploaded_at)}

@@ -19,6 +19,7 @@ import {
   deleteAgendamento,
 } from "./actions";
 import { ConfirmButton } from "../confirm-button";
+import { RecorrenciaFields } from "./recorrencia-fields";
 import { card, input, label, btnPrimary, badge } from "@/lib/ui";
 
 const statusStyle: Record<string, string> = {
@@ -333,6 +334,7 @@ export default async function AgendaPage({
                   className={input}
                 />
               </div>
+              <RecorrenciaFields atePadrao={shiftDay(dia, 84)} />
               <div>
                 <label className={label} htmlFor="observacao">
                   Observação

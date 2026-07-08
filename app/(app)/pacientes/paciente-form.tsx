@@ -79,6 +79,18 @@ export function PacienteForm({ action, paciente, error, cancelHref }: Props) {
           />
         </div>
         <div>
+          <label className={label} htmlFor="primeira_sessao">
+            Data da primeira sessão
+          </label>
+          <input
+            id="primeira_sessao"
+            name="primeira_sessao"
+            type="date"
+            defaultValue={p?.primeira_sessao ?? ""}
+            className={input}
+          />
+        </div>
+        <div>
           <label className={label} htmlFor="valor_sessao">
             Valor da sessão (R$)
           </label>
